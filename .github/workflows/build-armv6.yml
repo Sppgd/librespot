@@ -1,4 +1,4 @@
-name: Build ARMv6 (Pi Zero) librespot
+name: Build librespot ARMv6 (Pi Zero)
 
 on:
   push:
@@ -21,10 +21,26 @@ jobs:
         with:
           targets: arm-unknown-linux-gnueabihf
 
-      - name: Install cross-compilation tools
-        run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf
+      - name: Enable ARM architecture
+        run: sudo dpkg --add-architecture armhf
+
+      - name: Install cross-compilation tools & deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc-arm-linux-gnueabihf \
+            pkg-config \
+            libasound2-dev:armhf \
+            libssl-dev:armhf \
+            libc6-dev:armhf \
+            libpulse-dev:armhf
 
       - name: Build for ARMv6
+        env:
+          PKG_CONFIG_ALLOW_CROSS: 1
+          PKG_CONFIG_PATH: /usr/lib/arm-linux-gnueabihf/pkgconfig
+          PKG_CONFIG_LIBDIR: /usr/lib/arm-linux-gnueabihf/pkgconfig
+          CC_arm_unknown_linux_gnueabihf: arm-linux-gnueabihf-gcc
         run: cargo build --release --target arm-unknown-linux-gnueabihf
 
       - name: Upload binary
