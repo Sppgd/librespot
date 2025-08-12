@@ -21,19 +21,16 @@ jobs:
         with:
           targets: arm-unknown-linux-gnueabihf
 
-      - name: Enable ARM architecture
-        run: sudo dpkg --add-architecture armhf
-
-      - name: Install cross-compilation tools & deps
+      - name: Enable ARM architecture & install dependencies
         run: |
+          sudo dpkg --add-architecture armhf
           sudo apt-get update
           sudo apt-get install -y \
             gcc-arm-linux-gnueabihf \
             pkg-config \
             libasound2-dev:armhf \
             libssl-dev:armhf \
-            libc6-dev:armhf \
-            libpulse-dev:armhf
+            libc6-dev:armhf
 
       - name: Build for ARMv6
         env:
@@ -41,7 +38,7 @@ jobs:
           PKG_CONFIG_PATH: /usr/lib/arm-linux-gnueabihf/pkgconfig
           PKG_CONFIG_LIBDIR: /usr/lib/arm-linux-gnueabihf/pkgconfig
           CC_arm_unknown_linux_gnueabihf: arm-linux-gnueabihf-gcc
-        run: cargo build --release --target arm-unknown-linux-gnueabihf
+        run: cargo build --release --target arm-unknown-linux-gnueabihf --no-default-features --features alsa-backend
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
