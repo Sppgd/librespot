@@ -21,24 +21,17 @@ jobs:
         with:
           targets: arm-unknown-linux-gnueabihf
 
-      - name: Enable ARM architecture & install dependencies
-        run: |
-          sudo dpkg --add-architecture armhf
-          sudo apt-get update
-          sudo apt-get install -y \
-            gcc-arm-linux-gnueabihf \
-            pkg-config \
-            libasound2-dev:armhf \
-            libssl-dev:armhf \
-            libc6-dev:armhf
+      - name: Install ARM toolchain
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf pkg-config
 
-      - name: Build for ARMv6
+      - name: Build for ARMv6 (no system deps)
         env:
           PKG_CONFIG_ALLOW_CROSS: 1
-          PKG_CONFIG_PATH: /usr/lib/arm-linux-gnueabihf/pkgconfig
-          PKG_CONFIG_LIBDIR: /usr/lib/arm-linux-gnueabihf/pkgconfig
           CC_arm_unknown_linux_gnueabihf: arm-linux-gnueabihf-gcc
-        run: cargo build --release --target arm-unknown-linux-gnueabihf --no-default-features --features alsa-backend
+        run: cargo build --release \
+              --target arm-unknown-linux-gnueabihf \
+              --no-default-features \
+              --features "alsa-backend,vendored-openssl"
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
