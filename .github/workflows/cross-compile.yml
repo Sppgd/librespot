@@ -44,6 +44,10 @@ jobs:
             runs-on: ubuntu-latest
             target: riscv64gc-unknown-linux-gnu
 
+          - arch: armv6
+            runs-on: ubuntu-latest
+            target: arm-unknown-linux-gnueabihf
+
         toolchain:
           - "1.85" # MSRV (Minimum Supported Rust Version)
           - stable
